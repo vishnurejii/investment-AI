@@ -114,8 +114,8 @@ To ensure reliability, I built a custom LLM invocation wrapper (`askForJSON` in 
 
 ## 🎁 BONUS: LLM Chat Session Transcript
 
-As mandated for the bonus points, this entire project was built in tight collaboration with an Agentic LLM (Google DeepMind's Antigravity system). 
+As requested in the project requirements, I built this project in collaboration with an LLM to help speed up the development process, debug complex serverless deployment issues on Vercel, and implement the LangGraph architecture.
 
-To provide full insight into the thought process, debugging steps (including resolving complex Vercel deployment timeouts and API quota issues), and architecture decisions, I have included the raw JSONL transcript of our conversation.
+To provide full insight into my thought process and approach, I have included the complete, raw JSONL transcript of my chat session with the LLM. 
 
 👉 You can find the complete LLM chat logs in the root directory of this repository: **`LLM_CHAT_LOGS.jsonl`**
