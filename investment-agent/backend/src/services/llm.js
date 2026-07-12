@@ -37,12 +37,8 @@ export function getLLM({ temperature = 0.3 } = {}) {
     fallback = makeGemini(temperature);
   }
 
-  if (!primary && !fallback) {
-    throw new Error("No API key found. Set OPENAI_API_KEY or GEMINI_API_KEY in .env");
-  }
-
   // If primary key is missing, just use fallback as primary
-  if (!primary) {
+  if (!primary && fallback) {
     primary = fallback;
     fallback = null;
   }
@@ -84,6 +80,10 @@ export async function askForJSON(llmPair, systemPrompt, userPrompt) {
     { role: "system", content: systemPrompt },
     { role: "user", content: userPrompt },
   ];
+
+  if (!llmPair.primary) {
+    throw new Error("No API key found in Vercel environment variables! Please add OPENAI_API_KEY or GEMINI_API_KEY in your Vercel project settings.");
+  }
 
   // Try primary first
   try {
