@@ -111,11 +111,3 @@ To ensure reliability, I built a custom LLM invocation wrapper (`askForJSON` in 
 4. **Streaming UI:** Implementing Server-Sent Events (SSE) so the UI updates step-by-step (e.g., "Analyzing Financials...", then "Reading News...") instead of a static loading spinner.
 
 ---
-
-## 🎁 BONUS: LLM Chat Session Transcript
-
-As requested in the project requirements, I built this project in collaboration with an LLM to help speed up the development process, debug complex serverless deployment issues on Vercel, and implement the LangGraph architecture.
-
-To provide full insight into my thought process and approach, I have included the complete, raw JSONL transcript of my chat session with the LLM. 
-
-👉 You can find the complete LLM chat logs in the root directory of this repository: **`LLM_CHAT_LOGS.jsonl`**
