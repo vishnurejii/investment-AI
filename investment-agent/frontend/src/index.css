@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Light mode — default colors when "dark" class is NOT present */
+:root {
+  --color-bg: #F4F6F9;
+  --color-panel: #FFFFFF;
+  --color-panel-light: #E8ECF0;
+  --color-line: #D1D9E0;
+  --color-muted: #6B7A87;
+  --color-text: #0B0F14;
+}
+
+/* Dark mode — when "dark" class is on the root div */
+.dark {
+  --color-bg: #0B0F14;
+  --color-panel: #131A22;
+  --color-panel-light: #1B242E;
+  --color-line: #2A3542;
+  --color-muted: #7C8B99;
+  --color-text: #E8EDF2;
+}
+
+/* Apply CSS variables to the actual elements */
+.theme-bg       { background-color: var(--color-bg); }
+.theme-panel    { background-color: var(--color-panel); }
+.theme-panel-lt { background-color: var(--color-panel-light); }
+.theme-border   { border-color: var(--color-line); }
+.theme-muted    { color: var(--color-muted); }
+.theme-text     { color: var(--color-text); }

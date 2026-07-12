@@ -1,0 +1,21 @@
+{
+  "name": "investment-agent-backend",
+  "version": "1.0.0",
+  "description": "AI Investment Research Agent - backend (Express + LangGraph.js)",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.40",
+    "@langchain/google-genai": "^0.1.7",
+    "@langchain/langgraph": "^0.2.44",
+    "@langchain/openai": "^0.4.4",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
