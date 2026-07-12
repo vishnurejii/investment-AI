@@ -1,8 +1,8 @@
 import { getLLM, askForJSON } from "./services/llm.js";
 import { webSearch } from "./services/search.js";
 
-// Create one shared LLM instance used by all nodes
-const llm = getLLM({ temperature: 0.2 });
+// Create the LLM pair — primary + fallback for automatic rate-limit retry
+const llmPair = getLLM({ temperature: 0.2 });
 
 // If any node fails, we set state.error.
 // This helper checks that so later nodes can skip themselves.
@@ -20,7 +20,7 @@ export async function researchNode(state) {
     );
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are an equity research analyst. Return ONLY valid JSON with no markdown, matching exactly:
 {"companyName": string, "industry": string, "ceo": string, "businessModel": string, "founded": string, "headquarters": string, "summary": string}
 If web search context is unavailable, use your general knowledge and mention it in "summary".`,
@@ -43,7 +43,7 @@ export async function financialNode(state) {
     );
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are a financial analyst. Return ONLY valid JSON matching exactly:
 {"revenue": string, "netIncome": string, "marketCap": string, "revenueGrowthTrend": string, "profitabilityTrend": string, "summary": string}
 Use the most recent figures you know. If exact data isn't available, give an estimate and say so.`,
@@ -64,7 +64,7 @@ export async function newsNode(state) {
     const searchResults = await webSearch(`${state.company} latest news 2026`);
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are a markets news analyst. Return ONLY valid JSON matching exactly:
 {"headlines": [string], "sentiment": "positive"|"neutral"|"negative", "summary": string}
 "headlines" should be 3-5 short bullet-style items.`,
@@ -85,7 +85,7 @@ export async function competitorNode(state) {
     const searchResults = await webSearch(`${state.company} main competitors market share`);
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are a competitive-strategy analyst. Return ONLY valid JSON matching exactly:
 {"competitors": [string], "positioning": string, "summary": string}
 "competitors" should list 2-5 key rivals.`,
@@ -111,7 +111,7 @@ News: ${JSON.stringify(state.news)}
 Competitors: ${JSON.stringify(state.competitors)}`;
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are a risk analyst. Return ONLY valid JSON matching exactly:
 {"risks": [string], "opportunities": [string], "summary": string}
 "risks" and "opportunities" should each have 3-5 concise bullet items based on the context provided.`,
@@ -137,7 +137,7 @@ Competitors: ${JSON.stringify(state.competitors)}
 Risks & Opportunities: ${JSON.stringify(state.risks)}`;
 
     const data = await askForJSON(
-      llm,
+      llmPair,
       `You are the lead portfolio manager. Read all the research below and return ONLY valid JSON matching exactly:
 {"decision": "INVEST"|"PASS", "confidence": number, "pros": [string], "cons": [string], "reasoning": string}
 "confidence" is 0-100. Keep "reasoning" to 2-4 sentences.`,
