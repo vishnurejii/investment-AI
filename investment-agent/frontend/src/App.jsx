@@ -17,7 +17,10 @@ export default function App() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/analyze", {
+      // In production, VITE_API_URL points to the deployed backend.
+      // Locally, it's empty so the Vite proxy handles /api/* as usual.
+      const baseUrl = import.meta.env.VITE_API_URL || "";
+      const response = await fetch(`${baseUrl}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company }),
