@@ -1,5 +1,7 @@
 # AI Investment Research Agent
 
+**Live Demo:** [https://investment-ai-three.vercel.app/](https://investment-ai-three.vercel.app/)
+
 ## 📖 Overview
 The **AI Investment Research Agent** is a full-stack web application designed to act as your personal AI-driven financial analyst. You simply type in the name of a company (e.g., "Apple", "Tesla"), and the agent performs a deep-dive research analysis across six distinct steps. 
 
