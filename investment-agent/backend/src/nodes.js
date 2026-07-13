@@ -31,70 +31,63 @@ export async function gatherDataNode(state) {
 
 // Internal helper functions (previously separate nodes)
 async function _research(company) {
-  try {
-    const searchResults = await webSearch(
-      `${company} company overview business model CEO industry headquarters`
-    );
+  const searchResults = await webSearch(
+    `${company} company overview business model CEO industry headquarters`
+  );
 
-    const data = await askForJSON(
-      llmPair,
-      `You are an equity research analyst. Return ONLY valid JSON with no markdown, matching exactly:
+  const data = await askForJSON(
+    llmPair,
+    `You are an equity research analyst. Return ONLY valid JSON with no markdown, matching exactly:
 {"companyName": string, "industry": string, "ceo": string, "businessModel": string, "founded": string, "headquarters": string, "summary": string}
 If web search context is unavailable, use your general knowledge and mention it in "summary".`,
-      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
-    );
+    `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+  );
 
-    return data;
+  return data;
 }
 
 async function _financials(company) {
+  const searchResults = await webSearch(
+    `${company} revenue net income profit margin market capitalization financial results latest`
+  );
 
-  try {
-    const searchResults = await webSearch(
-      `${company} revenue net income profit margin market capitalization financial results latest`
-    );
-
-    const data = await askForJSON(
-      llmPair,
-      `You are a financial analyst. Return ONLY valid JSON matching exactly:
+  const data = await askForJSON(
+    llmPair,
+    `You are a financial analyst. Return ONLY valid JSON matching exactly:
 {"revenue": string, "netIncome": string, "marketCap": string, "revenueGrowthTrend": string, "profitabilityTrend": string, "summary": string}
 Use the most recent figures you know. If exact data isn't available, give an estimate and say so.`,
-      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
-    );
+    `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+  );
 
-    return data;
+  return data;
 }
 
 async function _news(company) {
+  const searchResults = await webSearch(`${company} latest news 2026`);
 
-  try {
-    const searchResults = await webSearch(`${company} latest news 2026`);
-
-    const data = await askForJSON(
-      llmPair,
-      `You are a markets news analyst. Return ONLY valid JSON matching exactly:
+  const data = await askForJSON(
+    llmPair,
+    `You are a markets news analyst. Return ONLY valid JSON matching exactly:
 {"headlines": [string], "sentiment": "positive"|"neutral"|"negative", "summary": string}
 "headlines" should be 3-5 short bullet-style items.`,
-      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
-    );
+    `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+  );
 
-    return data;
+  return data;
 }
 
 async function _competitors(company) {
+  const searchResults = await webSearch(`${company} main competitors market share`);
 
-  try {
-    const searchResults = await webSearch(`${company} main competitors market share`);
-
-    const data = await askForJSON(
-      llmPair,
-      `You are a competitive-strategy analyst. Return ONLY valid JSON matching exactly:
+  const data = await askForJSON(
+    llmPair,
+    `You are a competitive-strategy analyst. Return ONLY valid JSON matching exactly:
 {"competitors": [string], "positioning": string, "summary": string}
 "competitors" should list 2-5 key rivals.`,
-      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
-    );
+    `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+  );
 
-    return data;
+  return data;
 }
 
 // Step 5: Identify risks and opportunities based on everything gathered so far
