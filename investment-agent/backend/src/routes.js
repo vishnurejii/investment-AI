@@ -46,4 +46,17 @@ router.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+// GET /api/analyze - friendly message if user visits in browser
+router.get("/analyze", (req, res) => {
+  res.json({ message: "API is running! Please send a POST request with { company: 'Name' } to use this endpoint." });
+});
+
+// GET /api - friendly message
+router.get("/", (req, res) => {
+  res.json({ message: "Welcome to the AI Investment Research Agent API." });
+});
+router.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 export default router;
