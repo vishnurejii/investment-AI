@@ -10,13 +10,30 @@ function hasError(state) {
   return Boolean(state.error);
 }
 
-// Step 1: Get a basic company overview (who they are, what they do)
-export async function researchNode(state) {
+// We group the first 4 independent data gathering steps into one parallel node
+// This prevents Vercel's 60s timeout by drastically reducing the total time!
+export async function gatherDataNode(state) {
   if (hasError(state)) return {};
 
   try {
+    const [overview, financials, news, competitors] = await Promise.all([
+      _research(state.company),
+      _financials(state.company),
+      _news(state.company),
+      _competitors(state.company)
+    ]);
+
+    return { overview, financials, news, competitors };
+  } catch (err) {
+    return { error: `gatherDataNode failed: ${err.message}` };
+  }
+}
+
+// Internal helper functions (previously separate nodes)
+async function _research(company) {
+  try {
     const searchResults = await webSearch(
-      `${state.company} company overview business model CEO industry headquarters`
+      `${company} company overview business model CEO industry headquarters`
     );
 
     const data = await askForJSON(
@@ -24,22 +41,17 @@ export async function researchNode(state) {
       `You are an equity research analyst. Return ONLY valid JSON with no markdown, matching exactly:
 {"companyName": string, "industry": string, "ceo": string, "businessModel": string, "founded": string, "headquarters": string, "summary": string}
 If web search context is unavailable, use your general knowledge and mention it in "summary".`,
-      `Company: ${state.company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
     );
 
-    return { overview: data };
-  } catch (err) {
-    return { error: `researchNode failed: ${err.message}` };
-  }
+    return data;
 }
 
-// Step 2: Pull financial numbers — revenue, profit, market cap
-export async function financialNode(state) {
-  if (hasError(state)) return {};
+async function _financials(company) {
 
   try {
     const searchResults = await webSearch(
-      `${state.company} revenue net income profit margin market capitalization financial results latest`
+      `${company} revenue net income profit margin market capitalization financial results latest`
     );
 
     const data = await askForJSON(
@@ -47,55 +59,42 @@ export async function financialNode(state) {
       `You are a financial analyst. Return ONLY valid JSON matching exactly:
 {"revenue": string, "netIncome": string, "marketCap": string, "revenueGrowthTrend": string, "profitabilityTrend": string, "summary": string}
 Use the most recent figures you know. If exact data isn't available, give an estimate and say so.`,
-      `Company: ${state.company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
     );
 
-    return { financials: data };
-  } catch (err) {
-    return { error: `financialNode failed: ${err.message}` };
-  }
+    return data;
 }
 
-// Step 3: Check recent news and figure out if sentiment is positive, neutral, or negative
-export async function newsNode(state) {
-  if (hasError(state)) return {};
+async function _news(company) {
 
   try {
-    const searchResults = await webSearch(`${state.company} latest news 2026`);
+    const searchResults = await webSearch(`${company} latest news 2026`);
 
     const data = await askForJSON(
       llmPair,
       `You are a markets news analyst. Return ONLY valid JSON matching exactly:
 {"headlines": [string], "sentiment": "positive"|"neutral"|"negative", "summary": string}
 "headlines" should be 3-5 short bullet-style items.`,
-      `Company: ${state.company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
     );
 
-    return { news: data };
-  } catch (err) {
-    return { error: `newsNode failed: ${err.message}` };
-  }
+    return data;
 }
 
-// Step 4: Find the main competitors and where this company stands vs them
-export async function competitorNode(state) {
-  if (hasError(state)) return {};
+async function _competitors(company) {
 
   try {
-    const searchResults = await webSearch(`${state.company} main competitors market share`);
+    const searchResults = await webSearch(`${company} main competitors market share`);
 
     const data = await askForJSON(
       llmPair,
       `You are a competitive-strategy analyst. Return ONLY valid JSON matching exactly:
 {"competitors": [string], "positioning": string, "summary": string}
 "competitors" should list 2-5 key rivals.`,
-      `Company: ${state.company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
+      `Company: ${company}\n\nWeb search context:\n${searchResults || "(no live search available)"}`
     );
 
-    return { competitors: data };
-  } catch (err) {
-    return { error: `competitorNode failed: ${err.message}` };
-  }
+    return data;
 }
 
 // Step 5: Identify risks and opportunities based on everything gathered so far
